@@ -1,22 +1,74 @@
-<script>
-  async function generateImage() {
-    const prompt = document.getElementById('prompt').value;
-
-    const response = await fetch("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ inputs: prompt })
-    });
-
-    if (!response.ok) {
-      document.getElementById("result").innerHTML = `<p>Model is loading or busy. Try again in a moment.</p>`;
-      return;
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Echo Ultra</title>
+  <style>
+    body {
+      background-color: #0f0f0f;
+      color: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding-top: 100px;
     }
+    h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 20px;
+      margin-bottom: 40px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 18px;
+      margin: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      background-color: #444;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #666;
+    }
+    img {
+      margin-top: 30px;
+      max-width: 80%;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Echo Ultra</h1>
+  <p>This is Austin’s smart image generator powered by AI</p>
+  <input type="text" id="prompt" placeholder="Enter your image prompt">
+  <button onclick="generateImage()">Generate</button>
+  <div id="result"></div>
 
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    document.getElementById("result").innerHTML = `<img src="${url}" alt="Generated Image">`;
-  }
-</script>
+  <script>
+    async function generateImage() {
+      const prompt = document.getElementById('prompt').value;
+      document.getElementById("result").innerHTML = "<p>Generating...</p>";
+
+      const response = await fetch("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ inputs: prompt })
+      });
+
+      if (!response.ok) {
+        document.getElementById("result").innerHTML = "<p>Model is loading or busy. Try again shortly.</p>";
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      document.getElementById("result").innerHTML = `<img src="${url}" alt="Generated Image">`;
+    }
+  </script>
+</body>
+</html>
